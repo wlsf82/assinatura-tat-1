@@ -1,0 +1,38 @@
+name: E2E
+on: push
+jobs:
+  homolog-tests:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run tests in homolog 🧪
+        uses: cypress-io/github-action@v6
+        with:
+          command: npm run test:homolog
+        env:
+          CYPRESS_HOMOLOG_USER: ${{ secrets.CYPRESS_HOMOLOG_USER }}
+      - name: Save videos after test execution
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-videos-homolog
+          path: cypress/videos
+          if-no-files-found: ignore
+  prod-tests:
+    needs: homolog-tests
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run tests in prod 🧪
+        uses: cypress-io/github-action@v6
+        with:
+          command: npm run test:prod
+        env:
+          CYPRESS_PROD_USER: ${{ secrets.CYPRESS_PROD_USER }}
+      - name: Save videos after test execution
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-videos-prod
+          path: cypress/videos
+          if-no-files-found: ignore
